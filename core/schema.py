@@ -1,9 +1,7 @@
 """
 Strict schema for the Extraction Agent's output.
-
 Every invoice — regardless of layout, vendor, or source (text PDF vs.
-scanned image) — must be forced into this shape. No free text allowed
-downstream of extraction.
+scanned image) — must be forced into this shape.
 """
 
 from pydantic import BaseModel, Field
@@ -32,3 +30,4 @@ class Invoice(BaseModel):
     extraction_method: Optional[str] = Field(
         default=None, description="'groq_text' or 'gemini_vision'"
     )
+
