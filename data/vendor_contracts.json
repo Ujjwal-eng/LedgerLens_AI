@@ -1,0 +1,89 @@
+[
+  {
+    "vendor_name": "Sharma Digital Solutions Pvt. Ltd.",
+    "gstin": "09AABCS1234F1Z5",
+    "payment_terms_days": 15,
+    "max_invoice_amount": 150000,
+    "pricing_rules": {
+      "Website Maintenance - Monthly Retainer": {"min": 4000, "max": 15000},
+      "Cloud Hosting Charges": {"min": 4000, "max": 12000},
+      "SEO & Digital Marketing Services": {"min": 8000, "max": 20000},
+      "Custom Software Development - Sprint": {"min": 15000, "max": 28000},
+      "UI/UX Design Consultation": {"min": 5000, "max": 15000},
+      "API Integration Support": {"min": 4000, "max": 10000},
+      "Annual Software License Renewal": {"min": 10000, "max": 28000},
+      "Technical Support Hours": {"min": 4000, "max": 9000}
+    },
+    "clauses": [
+      "Any work performed outside the agreed scope of services listed in this contract, including emergency or weekend callouts, must be pre-approved in writing by the client before billing and is subject to a separate quote rather than standard line-item rates.",
+      "Late payment beyond the agreed Net 15 terms will attract a 1.5% per month penalty on the outstanding amount, applied from the due date.",
+      "Either party may terminate this agreement with 30 days written notice. Any work in progress at termination will be billed on a pro-rata basis.",
+      "Annual license renewal invoices are issued 30 days in advance of the renewal date and are non-refundable once processed."
+    ]
+  },
+  {
+    "vendor_name": "Nair Office Supplies Co.",
+    "gstin": "32AADCN9988K1Z1",
+    "payment_terms_days": 30,
+    "max_invoice_amount": 60000,
+    "bulk_discount_threshold": 50000,
+    "pricing_rules": {
+      "Stationery Supplies": {"min": 500, "max": 8000},
+      "Printer Cartridges": {"min": 1200, "max": 6000},
+      "Office Furniture": {"min": 3000, "max": 40000}
+    },
+    "clauses": [
+      "Bulk orders above Rs. 50,000 are eligible for a 5% volume discount, applied automatically at invoicing.",
+      "Damaged or incorrect items must be reported within 7 days of delivery for replacement; no cash refunds are issued.",
+      "Payment terms are Net 30 from invoice date; early payment within 10 days qualifies for a 2% early-payment discount."
+    ]
+  },
+  {
+    "vendor_name": "Kapoor Logistics & Freight Pvt. Ltd.",
+    "gstin": "07AAFCK5566L1Z4",
+    "payment_terms_days": 20,
+    "max_invoice_amount": 200000,
+    "pricing_rules": {
+      "Domestic Freight Charges": {"min": 5000, "max": 60000},
+      "Warehousing - Monthly": {"min": 10000, "max": 80000},
+      "Fuel Surcharge": {"min": 500, "max": 15000}
+    },
+    "clauses": [
+      "Fuel surcharge is recalculated monthly based on prevailing diesel prices and is capped at 12% of the base freight charge.",
+      "Delayed deliveries beyond the agreed SLA window are subject to a service credit of 2% of the invoice value per day delayed, up to a maximum of 10%.",
+      "Payment terms are Net 20 from invoice date. Disputed line items must be raised within 5 business days of receipt."
+    ]
+  },
+  {
+    "vendor_name": "Reddy Legal & Compliance Advisors",
+    "gstin": "36AAGCR3344M1Z7",
+    "payment_terms_days": 15,
+    "max_invoice_amount": 100000,
+    "pricing_rules": {
+      "Legal Consultation - Hourly": {"min": 3000, "max": 12000},
+      "Contract Drafting & Review": {"min": 8000, "max": 35000},
+      "Compliance Filing Assistance": {"min": 5000, "max": 20000}
+    },
+    "clauses": [
+      "Hourly consultation rates are billed in 30-minute increments; partial hours are rounded up.",
+      "Retainer clients receive a 10% discount on contract drafting services booked in the same billing cycle.",
+      "All invoices are due Net 15. Overdue invoices beyond 45 days may result in suspension of ongoing engagements."
+    ]
+  },
+  {
+    "vendor_name": "Chatterjee Print & Packaging",
+    "gstin": "19AABCC7654N1Z8",
+    "payment_terms_days": 30,
+    "max_invoice_amount": 80000,
+    "pricing_rules": {
+      "Packaging Material - Bulk": {"min": 2000, "max": 30000},
+      "Custom Print Run": {"min": 5000, "max": 45000},
+      "Design & Prepress": {"min": 1500, "max": 10000}
+    },
+    "clauses": [
+      "Custom print runs require a signed proof approval before production; changes after approval are billed separately.",
+      "Minimum order quantity discounts apply above 10,000 units at a rate of 8% off list pricing.",
+      "Payment terms are Net 30. A 50% advance is required for custom print runs exceeding Rs. 25,000."
+    ]
+  }
+]
