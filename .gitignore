@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Environment variables and secrets
+.env
+
+# Runtime-generated data (created at run time, not committed)
+data/reports/
+data/routing_log.jsonl
+data/human_decisions.jsonl
+data/report_log.txt
+data/web_app_state.json
