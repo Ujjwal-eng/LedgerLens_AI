@@ -5,30 +5,9 @@ separation is what makes Reporting a genuinely independent agent: it
 doesn't get invoked as part of processing any single invoice, it runs
 on its own clock and looks backward at what already happened.
 
-Usage:
-    python run_scheduled_report.py            # yesterday's digest (daily) for ALL users
-    python run_scheduled_report.py --weekly   # last 7 days for ALL users
-    python run_scheduled_report.py --user-id <uid>   # single user only
-
 Output: printed to console AND appended to data/reports/<user_id>.jsonl,
 so each user has their own running history of digests.
 
---- Scheduling this for real ---
-
-Linux/Mac (cron): run `crontab -e` and add, e.g. for 8am daily:
-    0 8 * * * cd /path/to/project && /path/to/python run_scheduled_report.py >> data/report_log.txt 2>&1
-
-Windows (Task Scheduler):
-    Create Task -> Trigger: Daily at 8:00 AM
-    Action: Start a program
-      Program: C:\path\to\python.exe
-      Arguments: run_scheduled_report.py
-      Start in: C:\path\to\your\project
-
-Cross-platform alternative (no OS scheduler needed) — keep a terminal
-open running:
-    pip install schedule
-    python run_scheduled_report.py --loop      # runs daily at 08:00, blocks forever
 """
 
 import os
