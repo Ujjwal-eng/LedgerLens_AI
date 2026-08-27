@@ -98,6 +98,15 @@ def build_graph():
     # LangGraph refuses to silently deserialize arbitrary types for
     # security reasons — we explicitly allowlist our own known-safe
     # models here rather than suppressing the warning.
+    #
+    # NOTE on persistence scope:
+    #   MemorySaver is intentionally in-memory. Its only job is to keep
+    #   state alive across the single human_approval interrupt within one
+    #   server process lifetime (the "pause while a human reviews" window).
+    #   Cross-restart / per-user durable persistence is owned by Supabase:
+    #   api.py serializes the full graph state (including user_id) to the
+    #   `invoices` table via _serialize() → upsert, so nothing is lost on
+    #   a server restart — the next request re-hydrates from Supabase.
     serde = JsonPlusSerializer(
         allowed_msgpack_modules=[
             ("core.schema", "Invoice"),
