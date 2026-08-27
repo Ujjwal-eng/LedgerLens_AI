@@ -16,9 +16,14 @@ from core.risk_schema import RiskResult
 
 
 class GraphState(TypedDict, total=False):
+    # identity — scopes ALL Supabase reads/writes to the logged-in user.
+    # Set at graph invocation time alongside supabase_client in config.
+    user_id: Optional[str]
+
     # input
     invoice_path: str
     vendor_history: List[dict]  # injected at invocation time (or fetched from Supabase in prod)
+    discount_percentage: Optional[float]  # contract discount for this invoice, before tax
 
     # produced by extraction_node
     invoice: Optional[Invoice]
