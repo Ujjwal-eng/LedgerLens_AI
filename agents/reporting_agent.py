@@ -1,5 +1,6 @@
 import os
 import sys
+from collections import Counter
 from datetime import datetime, timezone, timedelta
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -16,10 +17,23 @@ class ReportingAgent:
         # Auto-approvals never touch the decision log (no human involved),
         # so: any approved invoice backed by an "approve" decision entry
         # was human-approved; everything else was auto-approved.
-        human_approved_numbers = {d["invoice_number"] for d in decisions if d["action"] == "approve"}
-        total_human_approved = sum(
-            1 for inv in approved_invoices if inv["invoice_number"] in human_approved_numbers
-        )
+        #
+        # NOTE: invoice_number is a business document field, not a unique
+        # key for a processing run — the same PDF (e.g. a reused sample
+        # invoice) can be run multiple times and always extracts the same
+        # invoice_number. Matching via plain set membership meant ONE
+        # human "approve" decision would mark EVERY approved invoice that
+        # happens to share that invoice_number as human-approved, even
+        # ones that were actually auto-approved in a different run. Using
+        # a counter consumes each decision exactly once so a single
+        # approval can only account for a single invoice.
+        approve_counts = Counter(d["invoice_number"] for d in decisions if d["action"] == "approve")
+        total_human_approved = 0
+        for inv in approved_invoices:
+            number = inv["invoice_number"]
+            if approve_counts.get(number, 0) > 0:
+                approve_counts[number] -= 1
+                total_human_approved += 1
         total_auto_approved = len(approved_invoices) - total_human_approved
 
         total_rejected = len({d["invoice_number"] for d in decisions if d["action"] == "reject"})
@@ -87,9 +101,21 @@ class ReportingAgent:
                 f"Rs.{digest.total_amount_approved:,.2f} total approved."
             )
 
-    def run(self, window_start: datetime, window_end: datetime, supabase_client) -> ReportDigest:
-        approved_invoices = fetch_approved_invoices(supabase_client, window_start, window_end)
-        decisions = fetch_decisions_in_window(window_start, window_end)
+    def run(
+        self,
+        window_start: datetime,
+        window_end: datetime,
+        supabase_client,
+        user_id: str | None = None,
+    ) -> ReportDigest:
+        approved_invoices = fetch_approved_invoices(
+            supabase_client, window_start, window_end, user_id=user_id
+        )
+        decisions = fetch_decisions_in_window(
+            window_start, window_end,
+            supabase_client=supabase_client,
+            user_id=user_id,
+        )
 
         digest = self.compute_stats(window_start, window_end, approved_invoices, decisions)
         digest.narrative = self.generate_narrative(digest)
