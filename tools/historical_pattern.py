@@ -9,21 +9,48 @@ import statistics
 from typing import Optional
 
 
-def fetch_vendor_history(supabase_client, vendor_name: str) -> list[dict]:
-    response = (
-        supabase_client.table("vendor_invoices")
-        .select("*")
-        .eq("vendor_name", vendor_name)
-        .execute()
+def fetch_vendor_history(
+    supabase_client, vendor_name: str, user_id: str | None = None
+) -> list[dict]:
+    """Fetch this vendor's approved invoice history for the given user.
+    Filters to the `invoices` table (the single source of truth) rather
+    than the old separate `vendor_invoices` table so no data is siloed."""
+    query = (
+        supabase_client.table("invoices")
+        .select("invoice,decision,created_at")
+        .eq("decision->>status", "approved_exported")
     )
-    return response.data or []
+    if user_id:
+        query = query.eq("user_id", user_id)
+    rows = query.execute().data or []
+    result = []
+    for row in rows:
+        inv = row.get("invoice")
+        if not inv:
+            continue
+        v = inv.get("vendor") or inv.get("vendor_name") or ""
+        if v.lower() != vendor_name.lower():
+            continue
+        result.append({
+            "vendor_name": v,
+            "invoice_number": inv.get("invoice_number") or "",
+            "amount": inv.get("amount") or 0.0,
+            "invoice_date": inv.get("invoice_date"),
+            "created_at": row.get("created_at"),
+        })
+    return result
 
 
-def save_processed_invoice(supabase_client, invoice_record: dict) -> None:
-    """Writes one processed invoice back into vendor_invoices, so it's
-    part of this vendor's history for every FUTURE risk assessment.
-    """
-    supabase_client.table("vendor_invoices").insert(invoice_record).execute()
+def save_processed_invoice(
+    supabase_client, invoice_record: dict, user_id: str | None = None
+) -> None:
+    """No-op: the invoice is already persisted to the `invoices` table by
+    api.py's _serialize() → upsert. The old separate `vendor_invoices`
+    insert is removed so we don't write to a non-existent table and
+    don't duplicate data. Risk history is derived from `invoices` via
+    fetch_vendor_history() above."""
+    # Kept as a hook in case a future migration needs it; nothing to do now.
+    pass
 
 
 def compute_stats(history: list[dict]) -> dict:
