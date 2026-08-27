@@ -1,0 +1,776 @@
+{
+  "invoice_01_SDS-2026-27-101": {
+    "invoice_number": "SDS/2026-27/101",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-07-21",
+    "due_date": "2026-08-05",
+    "amount": 23310.66,
+    "line_items": [
+      {
+        "description": "UI/UX Design Consultation",
+        "quantity": 2,
+        "rate": 9877.4,
+        "amount": 19754.8
+      }
+    ],
+    "source_file": "sample_invoices/invoice_01_SDS-2026-27-101.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Clean baseline invoice, all fields within contract terms."
+  },
+  "invoice_02_SDS-2026-27-102": {
+    "invoice_number": "SDS/2026-27/102",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-05-18",
+    "due_date": "2026-06-02",
+    "amount": 21442.74,
+    "line_items": [
+      {
+        "description": "Cloud Hosting Charges",
+        "quantity": 1,
+        "rate": 18171.82,
+        "amount": 18171.82
+      }
+    ],
+    "source_file": "sample_invoices/invoice_02_SDS-2026-27-102.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:Cloud Hosting Charges"
+    ],
+    "notes": "Clean baseline invoice, all fields within contract terms. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_03_SDS-2026-27-103": {
+    "invoice_number": "SDS/2026-27/103",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-05-05",
+    "due_date": "2026-05-20",
+    "amount": 11308.96,
+    "line_items": [
+      {
+        "description": "Custom Software Development - Sprint",
+        "quantity": 1,
+        "rate": 9583.86,
+        "amount": 9583.86
+      }
+    ],
+    "source_file": "sample_invoices/invoice_03_SDS-2026-27-103.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:Custom Software Development - Sprint"
+    ],
+    "notes": "Clean baseline invoice, all fields within contract terms. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_04_SDS-2026-27-104": {
+    "invoice_number": "SDS/2026-27/104",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-07-17",
+    "due_date": "2026-08-01",
+    "amount": 91825.54,
+    "line_items": [
+      {
+        "description": "Custom Software Development - Sprint",
+        "quantity": 1,
+        "rate": 20831.8,
+        "amount": 20831.8
+      },
+      {
+        "description": "API Integration Support",
+        "quantity": 3,
+        "rate": 14068.48,
+        "amount": 42205.44
+      },
+      {
+        "description": "Annual Software License Renewal",
+        "quantity": 1,
+        "rate": 14781.02,
+        "amount": 14781.02
+      }
+    ],
+    "source_file": "sample_invoices/invoice_04_SDS-2026-27-104.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:API Integration Support"
+    ],
+    "notes": "Clean baseline invoice, all fields within contract terms. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_05_SDS-2026-27-105": {
+    "invoice_number": "SDS/2026-27/105",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-06-05",
+    "due_date": "2026-06-20",
+    "amount": 14355.89,
+    "line_items": [
+      {
+        "description": "Annual Software License Renewal",
+        "quantity": 1,
+        "rate": 12166.01,
+        "amount": 12166.01
+      }
+    ],
+    "source_file": "sample_invoices/invoice_05_SDS-2026-27-105.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Clean baseline invoice, all fields within contract terms."
+  },
+  "invoice_06_SDS-2026-27-106": {
+    "invoice_number": "SDS/2026-27/106",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-05-20",
+    "due_date": "2026-06-04",
+    "amount": 30365.85,
+    "line_items": [
+      {
+        "description": "Cloud Hosting Charges",
+        "quantity": 1,
+        "rate": 13118.26,
+        "amount": 13118.26
+      },
+      {
+        "description": "Website Maintenance - Monthly Retainer",
+        "quantity": 1,
+        "rate": 12615.51,
+        "amount": 12615.51
+      }
+    ],
+    "source_file": "sample_invoices/invoice_06_SDS-2026-27-106.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:Cloud Hosting Charges"
+    ],
+    "notes": "Clean baseline invoice, all fields within contract terms. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_07_SDS-2026-27-107": {
+    "invoice_number": "SDS/2026-27/107",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-06-14",
+    "due_date": "2026-06-29",
+    "amount": 42496.15,
+    "line_items": [
+      {
+        "description": "Website Maintenance - Monthly Retainer",
+        "quantity": 1,
+        "rate": 15026.2,
+        "amount": 15026.2
+      },
+      {
+        "description": "API Integration Support",
+        "quantity": 3,
+        "rate": 6995.83,
+        "amount": 20987.49
+      }
+    ],
+    "source_file": "sample_invoices/invoice_07_SDS-2026-27-107.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:Website Maintenance - Monthly Retainer"
+    ],
+    "notes": "Clean baseline invoice, all fields within contract terms. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_08_SDS-2026-27-108": {
+    "invoice_number": "SDS/2026-27/108",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-06-18",
+    "due_date": "2026-07-03",
+    "amount": 136808.32,
+    "line_items": [
+      {
+        "description": "UI/UX Design Consultation",
+        "quantity": 2,
+        "rate": 18844.47,
+        "amount": 37688.94
+      },
+      {
+        "description": "Annual Software License Renewal",
+        "quantity": 1,
+        "rate": 24680.97,
+        "amount": 24680.97
+      },
+      {
+        "description": "API Integration Support",
+        "quantity": 3,
+        "rate": 17856.45,
+        "amount": 53569.35
+      }
+    ],
+    "source_file": "sample_invoices/invoice_08_SDS-2026-27-108.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:UI/UX Design Consultation",
+      "line_item:API Integration Support"
+    ],
+    "notes": "Clean baseline invoice, all fields within contract terms. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_09_SDS-2026-27-109": {
+    "invoice_number": "SDS/2026-27/109",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-07-30",
+    "due_date": "2026-08-14",
+    "amount": 26613.3,
+    "line_items": [
+      {
+        "description": "Custom Software Development - Sprint",
+        "quantity": 1,
+        "rate": 22553.64,
+        "amount": 22553.64
+      }
+    ],
+    "source_file": "sample_invoices/invoice_09_SDS-2026-27-109.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Clean baseline invoice, all fields within contract terms."
+  },
+  "invoice_10_SDS-2026-27-110": {
+    "invoice_number": "SDS/2026-27/110",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-05-11",
+    "due_date": "2026-05-26",
+    "amount": 12592.21,
+    "line_items": [
+      {
+        "description": "Annual Software License Renewal",
+        "quantity": 1,
+        "rate": 10671.37,
+        "amount": 10671.37
+      }
+    ],
+    "source_file": "sample_invoices/invoice_10_SDS-2026-27-110.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Clean baseline invoice, all fields within contract terms."
+  },
+  "invoice_11_SDS-2026-27-101": {
+    "invoice_number": "SDS/2026-27/101",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-08-04",
+    "due_date": "2026-08-19",
+    "amount": 56263.81,
+    "line_items": [
+      {
+        "description": "API Integration Support",
+        "quantity": 3,
+        "rate": 12884.34,
+        "amount": 38653.02
+      },
+      {
+        "description": "Cloud Hosting Charges",
+        "quantity": 1,
+        "rate": 9028.17,
+        "amount": 9028.17
+      }
+    ],
+    "source_file": "sample_invoices/invoice_11_SDS-2026-27-101.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:API Integration Support"
+    ],
+    "notes": "Reuses invoice_01's exact invoice number. Compliance/guardrails clean; RISK should flag duplicate_invoice if processed after invoice_01. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_12_SDS-2026-27-112": {
+    "invoice_number": "SDS/2026-27/112",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-08-09",
+    "due_date": "2026-08-24",
+    "amount": 344109.21,
+    "line_items": [
+      {
+        "description": "UI/UX Design Consultation",
+        "quantity": 2,
+        "rate": 26479.71,
+        "amount": 52959.42
+      },
+      {
+        "description": "API Integration Support",
+        "quantity": 3,
+        "rate": 19552.85,
+        "amount": 58658.55
+      },
+      {
+        "description": "Emergency Migration - Weekend Callout",
+        "quantity": 1,
+        "rate": 180000.0,
+        "amount": 180000.0
+      }
+    ],
+    "source_file": "sample_invoices/invoice_12_SDS-2026-27-112.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "invoice_total_exceeds_vendor_cap",
+      "unmatched_line_item_category"
+    ],
+    "notes": "Emergency Migration line item doesn't match any contracted category; total exceeds Sharma's Rs.150,000 vendor cap."
+  },
+  "scanned_invoice_02_SDS-2026-27-102": {
+    "invoice_number": "SDS/2026-27/102",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-05-18",
+    "due_date": "2026-06-02",
+    "amount": 21442.74,
+    "line_items": [
+      {
+        "description": "Cloud Hosting Charges",
+        "quantity": 1,
+        "rate": 18171.82,
+        "amount": 18171.82
+      }
+    ],
+    "source_file": "sample_invoices_scanned/scanned_invoice_02_SDS-2026-27-102.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:Cloud Hosting Charges"
+    ],
+    "notes": "Realistic scan quality \u2014 should route through OCR (Tier 2), not vision. [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "scanned_invoice_05_SDS-2026-27-105": {
+    "invoice_number": "SDS/2026-27/105",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-06-05",
+    "due_date": "2026-06-20",
+    "amount": 14355.89,
+    "line_items": [
+      {
+        "description": "Annual Software License Renewal",
+        "quantity": 1,
+        "rate": 12166.01,
+        "amount": 12166.01
+      }
+    ],
+    "source_file": "sample_invoices_scanned/scanned_invoice_05_SDS-2026-27-105.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Realistic scan quality \u2014 should route through OCR (Tier 2), not vision."
+  },
+  "scanned_BADQUALITY_invoice_07": {
+    "invoice_number": "SDS/2026-27/107",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-06-14",
+    "due_date": "2026-06-29",
+    "amount": 42496.15,
+    "line_items": [
+      {
+        "description": "Website Maintenance - Monthly Retainer",
+        "quantity": 1,
+        "rate": 15026.2,
+        "amount": 15026.2
+      },
+      {
+        "description": "API Integration Support",
+        "quantity": 3,
+        "rate": 6995.83,
+        "amount": 20987.49
+      }
+    ],
+    "source_file": "sample_invoices_scanned/scanned_BADQUALITY_invoice_07.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "line_item:Website Maintenance - Monthly Retainer"
+    ],
+    "notes": "Heavily degraded scan \u2014 should force Tier 3 (Gemini vision). Same underlying data as invoice_07, so if processed after it, RISK should flag possible_duplicate (fuzzy match). [Ground truth corrected after eval run: original random-generated rate falls outside the vendor's contracted per-item price range \u2014 a genuine data/contract mismatch in the synthetic baseline data, not an agent error.]"
+  },
+  "invoice_14_SDS-2026-27-118": {
+    "invoice_number": "SDS/2026-27/118",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-08-03",
+    "due_date": "2026-08-18",
+    "amount": 145000,
+    "line_items": [
+      {
+        "description": "Annual Software License Renewal",
+        "quantity": 1,
+        "rate": 24000,
+        "amount": 24000
+      },
+      {
+        "description": "Technical Support Hours",
+        "quantity": 5,
+        "rate": 7500,
+        "amount": 37500
+      }
+    ],
+    "source_file": "sample_invoices/invoice_14_SDS-2026-27-118.pdf",
+    "expected_guardrail_status": "blocked",
+    "expected_guardrail_violation": "line_items_sum_to_total",
+    "expected_compliance_status": null,
+    "expected_compliance_issues": [],
+    "notes": "Printed Total (145,000) doesn't reconcile with line items + tax (~72,570). Simulates a clerical total error."
+  },
+  "invoice_15_RLC-2026-215": {
+    "invoice_number": "RLC/2026/215",
+    "vendor": "Reddy Legal & Compliance Advisors",
+    "invoice_date": "2026-07-20",
+    "due_date": "2026-08-04",
+    "amount": 53100,
+    "line_items": [
+      {
+        "description": "Legal Consultation - Hourly",
+        "quantity": 3,
+        "rate": 9000,
+        "amount": 45000
+      }
+    ],
+    "source_file": "sample_invoices/invoice_15_RLC-2026-215.pdf",
+    "expected_guardrail_status": "blocked",
+    "expected_guardrail_violation": "line_item_internal_math",
+    "expected_compliance_status": null,
+    "expected_compliance_issues": [],
+    "notes": "Line item printed amount (45,000) doesn't equal qty x rate (3 x 9,000 = 27,000). Total is consistent with the WRONG line amount, isolating this as purely a per-line math violation."
+  },
+  "invoice_16_KLF-2026-512": {
+    "invoice_number": "KLF/2026/512",
+    "vendor": "Kapoor Logistics & Freight Pvt. Ltd.",
+    "invoice_date": "2026-08-01",
+    "due_date": "2026-08-21",
+    "amount": 160480,
+    "line_items": [
+      {
+        "description": "Domestic Freight Charges",
+        "quantity": 1,
+        "rate": 58000,
+        "amount": 58000
+      },
+      {
+        "description": "Warehousing - Monthly",
+        "quantity": 1,
+        "rate": 78000,
+        "amount": 78000
+      }
+    ],
+    "source_file": "sample_invoices/invoice_16_KLF-2026-512.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Internally consistent, each line within its contracted price range, correct Net 20 terms. Exceeds the GLOBAL hard ceiling (Rs.150,000) but this is a Supervisor/export-level guardrail, not a compliance or arithmetic issue."
+  },
+  "NOS_01_clean_autoapprove": {
+    "invoice_number": "NOS/2026/041",
+    "vendor": "Nair Office Supplies Co.",
+    "invoice_date": "2026-07-01",
+    "due_date": "2026-07-31",
+    "amount": 20414.0,
+    "line_items": [
+      {
+        "description": "Printer Cartridges",
+        "quantity": 4,
+        "rate": 3200,
+        "amount": 12800
+      },
+      {
+        "description": "Stationery Supplies",
+        "quantity": 1,
+        "rate": 4500,
+        "amount": 4500
+      }
+    ],
+    "source_file": "sample_invoices/NOS_01_clean_autoapprove.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Correct Net 30, all items in range, well under Rs.60,000 cap."
+  },
+  "NOS_02_wrong_payment_terms": {
+    "invoice_number": "NOS/2026/042",
+    "vendor": "Nair Office Supplies Co.",
+    "invoice_date": "2026-07-05",
+    "due_date": "2026-07-20",
+    "amount": 25960.0,
+    "line_items": [
+      {
+        "description": "Office Furniture",
+        "quantity": 1,
+        "rate": 22000,
+        "amount": 22000
+      }
+    ],
+    "source_file": "sample_invoices/NOS_02_wrong_payment_terms.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "payment_terms_mismatch"
+    ],
+    "notes": "Net 15 on invoice vs contracted Net 30."
+  },
+  "NOS_03_bulk_discount_clause": {
+    "invoice_number": "NOS/2026/043",
+    "vendor": "Nair Office Supplies Co.",
+    "invoice_date": "2026-07-01",
+    "due_date": "2026-07-31",
+    "amount": 59590.0,
+    "line_items": [
+      {
+        "description": "Office Furniture",
+        "quantity": 1,
+        "rate": 37500,
+        "amount": 37500
+      },
+      {
+        "description": "Stationery Supplies",
+        "quantity": 2,
+        "rate": 6500,
+        "amount": 13000
+      }
+    ],
+    "source_file": "sample_invoices/NOS_03_bulk_discount_clause.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "bulk_order_discount_warning"
+    ],
+    "notes": "Subtotal 50,500 crosses the Rs.50,000 bulk-discount threshold; stays under vendor cap."
+  },
+  "NOS_04_damaged_item_clause": {
+    "invoice_number": "NOS/2026/044",
+    "vendor": "Nair Office Supplies Co.",
+    "invoice_date": "2026-07-05",
+    "due_date": "2026-08-04",
+    "amount": 8000.4,
+    "line_items": [
+      {
+        "description": "Damaged Goods Replacement Charge",
+        "quantity": 1,
+        "rate": 6780,
+        "amount": 6780
+      }
+    ],
+    "source_file": "sample_invoices/NOS_04_damaged_item_clause.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "unmatched_line_item_category"
+    ],
+    "notes": "Line item doesn't match any of Nair's contracted service categories."
+  },
+  "KLF_01_clean_baseline": {
+    "invoice_number": "KLF/2026/501",
+    "vendor": "Kapoor Logistics & Freight Pvt. Ltd.",
+    "invoice_date": "2026-07-01",
+    "due_date": "2026-07-21",
+    "amount": 46020.0,
+    "line_items": [
+      {
+        "description": "Domestic Freight Charges",
+        "quantity": 1,
+        "rate": 35000,
+        "amount": 35000
+      },
+      {
+        "description": "Fuel Surcharge",
+        "quantity": 1,
+        "rate": 4000,
+        "amount": 4000
+      }
+    ],
+    "source_file": "sample_invoices/KLF_01_clean_baseline.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Baseline. RISK should be first_time_vendor if processed first."
+  },
+  "KLF_02_EXACT_duplicate": {
+    "invoice_number": "KLF/2026/501",
+    "vendor": "Kapoor Logistics & Freight Pvt. Ltd.",
+    "invoice_date": "2026-07-22",
+    "due_date": "2026-08-11",
+    "amount": 46020.0,
+    "line_items": [
+      {
+        "description": "Domestic Freight Charges",
+        "quantity": 1,
+        "rate": 35000,
+        "amount": 35000
+      },
+      {
+        "description": "Fuel Surcharge",
+        "quantity": 1,
+        "rate": 4000,
+        "amount": 4000
+      }
+    ],
+    "source_file": "sample_invoices/KLF_02_EXACT_duplicate.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "RISK should flag duplicate_invoice (HIGH) if processed after KLF_01."
+  },
+  "CPP_01_vendor_cap_breach": {
+    "invoice_number": "CPP/2026/301",
+    "vendor": "Chatterjee Print & Packaging",
+    "invoice_date": "2026-07-01",
+    "due_date": "2026-07-31",
+    "amount": 94400.0,
+    "line_items": [
+      {
+        "description": "Custom Print Run",
+        "quantity": 1,
+        "rate": 45000,
+        "amount": 45000
+      },
+      {
+        "description": "Packaging Material - Bulk",
+        "quantity": 1,
+        "rate": 30000,
+        "amount": 30000
+      },
+      {
+        "description": "Design & Prepress",
+        "quantity": 1,
+        "rate": 5000,
+        "amount": 5000
+      }
+    ],
+    "source_file": "sample_invoices/CPP_01_vendor_cap_breach.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "fail",
+    "expected_compliance_issues": [
+      "invoice_total_exceeds_vendor_cap"
+    ],
+    "notes": "Each line individually within range; only the total (94,400) exceeds Chatterjee's Rs.80,000 cap. Isolates the vendor-cap check."
+  },
+  "RLC_01_normal_history": {
+    "invoice_number": "RLC/2026/201",
+    "vendor": "Reddy Legal & Compliance Advisors",
+    "invoice_date": "2026-06-01",
+    "due_date": "2026-06-16",
+    "amount": 10620.0,
+    "line_items": [
+      {
+        "description": "Legal Consultation - Hourly",
+        "quantity": 1,
+        "rate": 9000,
+        "amount": 9000
+      }
+    ],
+    "source_file": "sample_invoices/RLC_01_normal_history.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Identical amount each time \u2014 builds a zero-variance history for the outlier test."
+  },
+  "RLC_02_normal_history": {
+    "invoice_number": "RLC/2026/202",
+    "vendor": "Reddy Legal & Compliance Advisors",
+    "invoice_date": "2026-07-01",
+    "due_date": "2026-07-16",
+    "amount": 10620.0,
+    "line_items": [
+      {
+        "description": "Legal Consultation - Hourly",
+        "quantity": 1,
+        "rate": 9000,
+        "amount": 9000
+      }
+    ],
+    "source_file": "sample_invoices/RLC_02_normal_history.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Identical amount each time \u2014 builds a zero-variance history for the outlier test."
+  },
+  "RLC_03_normal_history": {
+    "invoice_number": "RLC/2026/203",
+    "vendor": "Reddy Legal & Compliance Advisors",
+    "invoice_date": "2026-08-01",
+    "due_date": "2026-08-16",
+    "amount": 10620.0,
+    "line_items": [
+      {
+        "description": "Legal Consultation - Hourly",
+        "quantity": 1,
+        "rate": 9000,
+        "amount": 9000
+      }
+    ],
+    "source_file": "sample_invoices/RLC_03_normal_history.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Identical amount each time \u2014 builds a zero-variance history for the outlier test."
+  },
+  "RLC_04_normal_history": {
+    "invoice_number": "RLC/2026/204",
+    "vendor": "Reddy Legal & Compliance Advisors",
+    "invoice_date": "2026-09-01",
+    "due_date": "2026-09-16",
+    "amount": 10620.0,
+    "line_items": [
+      {
+        "description": "Legal Consultation - Hourly",
+        "quantity": 1,
+        "rate": 9000,
+        "amount": 9000
+      }
+    ],
+    "source_file": "sample_invoices/RLC_04_normal_history.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Identical amount each time \u2014 builds a zero-variance history for the outlier test."
+  },
+  "RLC_05_price_deviation_outlier": {
+    "invoice_number": "RLC/2026/299",
+    "vendor": "Reddy Legal & Compliance Advisors",
+    "invoice_date": "2026-08-14",
+    "due_date": "2026-08-29",
+    "amount": 70800.0,
+    "line_items": [
+      {
+        "description": "Legal Consultation - Hourly",
+        "quantity": 6,
+        "rate": 10000,
+        "amount": 60000
+      }
+    ],
+    "source_file": "sample_invoices/RLC_05_price_deviation_outlier.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "Rate still in-contract range; RISK should flag severe_price_deviation if processed after RLC_01-04."
+  },
+  "SDS_13_EXACT_duplicate_of_invoice01": {
+    "invoice_number": "SDS/2026-27/101",
+    "vendor": "Sharma Digital Solutions Pvt. Ltd.",
+    "invoice_date": "2026-08-01",
+    "due_date": "2026-08-16",
+    "amount": 14160.0,
+    "line_items": [
+      {
+        "description": "Website Maintenance - Monthly Retainer",
+        "quantity": 1,
+        "rate": 12000,
+        "amount": 12000
+      }
+    ],
+    "source_file": "sample_invoices/SDS_13_EXACT_duplicate_of_invoice01.pdf",
+    "expected_guardrail_status": "pass",
+    "expected_guardrail_violation": null,
+    "expected_compliance_status": "pass",
+    "expected_compliance_issues": [],
+    "notes": "RISK should flag duplicate_invoice if processed after invoice_01 (requires invoice_01 already in history)."
+  }
+}
