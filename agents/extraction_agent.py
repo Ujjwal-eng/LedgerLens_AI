@@ -92,21 +92,24 @@ def _parse_and_validate(raw_json_str: str, source_file: str, method: str) -> Inv
 
 def _method_label(tier: str, provider: str, fallback: bool) -> str:
     if fallback:
-        return "gemini_vision_fallback"
-    return {("text_pdf", "groq"): "groq_text", ("ocr", "groq"): "groq_ocr",
+        # Gemini is primary everywhere now; the only fallback path left
+        # is Groq text, for the two tiers that have raw text at all.
+        return {"text_pdf": "groq_text_fallback", "ocr": "groq_ocr_fallback"}.get(tier, f"{provider}_{tier}_fallback")
+    return {("text_pdf", "gemini"): "gemini_text", ("ocr", "gemini"): "gemini_ocr",
             ("low_confidence_ocr", "gemini"): "gemini_vision"}.get((tier, provider), f"{provider}_{tier}")
 
 
 def extract_invoice(path: str) -> Invoice:
     """Main entry point — three-tier routing, all provider calls via the gateway."""
 
-    # TIER 1: digital text PDF
+    # TIER 1: digital text PDF. Gemini and its Groq fallback are both
+    # text-based, so there's no need to rasterize the PDF to an image
+    # here at all (that used to be prepared eagerly for a Groq-fails
+    # -> Gemini-vision fallback, which no longer exists).
     text = extract_text_from_pdf(path)
     if len(text) >= MIN_TEXT_CHARS:
-        image = pdf_page_to_image(path)  # prepared upfront in case Groq fails and we need the fallback
         raw, provider, fallback = extract_with_fallback(
-            EXTRACTION_INSTRUCTIONS, path, tier="text_pdf",
-            text=text, image_bytes=image_to_bytes(image),
+            EXTRACTION_INSTRUCTIONS, path, tier="text_pdf", text=text,
         )
         return _parse_and_validate(raw, path, _method_label("text_pdf", provider, fallback))
 
@@ -119,9 +122,10 @@ def extract_invoice(path: str) -> Invoice:
     print(f"[info] OCR on {path}: {len(ocr_text)} chars, confidence {ocr_confidence:.1f}/100")
 
     if len(ocr_text) >= OCR_MIN_TEXT_CHARS and ocr_confidence >= OCR_MIN_CONFIDENCE:
+        # image_bytes isn't passed here either — same reasoning as tier 1,
+        # the fallback for a text-bearing tier is Groq text, not vision.
         raw, provider, fallback = extract_with_fallback(
-            EXTRACTION_INSTRUCTIONS, path, tier="ocr",
-            text=ocr_text, image_bytes=image_bytes,
+            EXTRACTION_INSTRUCTIONS, path, tier="ocr", text=ocr_text,
         )
         return _parse_and_validate(raw, path, _method_label("ocr", provider, fallback))
 
