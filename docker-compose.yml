@@ -1,0 +1,103 @@
+# ---------------------------------------------------------------------------
+# LedgerLens AI — Docker Compose stack
+#
+# Services:
+#   backend   — FastAPI + LangGraph pipeline (uvicorn, port 8000)
+#   frontend  — Nginx static file server + /api reverse proxy (port 80)
+#
+# Usage:
+#   docker compose up --build -d          # build & start (detached)
+#   docker compose logs -f                # tail all logs
+#   docker compose down                   # stop & remove containers
+#   docker compose down -v                # also remove named volumes
+# ---------------------------------------------------------------------------
+
+services:
+
+  # -------------------------------------------------------------------------
+  # Backend — FastAPI wrapping the LangGraph invoice-processing pipeline.
+  # -------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ledgerlens_backend
+    image: ledgerlens-backend:latest
+
+    # Load secrets from .env at the repo root.
+    # In a production deployment (Render / Railway / Fly.io / AWS ECS),
+    # remove env_file and inject these as platform-level secrets instead —
+    # never bake real keys into the image.
+    env_file: .env
+
+    # Override or extend any env var from .env here without editing .env.
+    environment:
+      # Tell Python not to buffer stdout/stderr so logs appear immediately.
+      - PYTHONUNBUFFERED=1
+      # Scratch dir for temp PDF files (api.py uses tempfile.gettempdir()).
+      - TMPDIR=/tmp
+
+    ports:
+      # Expose the API directly during development / for health checks.
+      # In production behind a reverse proxy you can remove this.
+      - "8000:8000"
+
+    volumes:
+      # Named volume so the /app/uploads folder (temp PDFs that haven't
+      # been moved to Supabase Storage yet) survives container restarts.
+      # Long-lived PDFs live in Supabase Storage, not here.
+      - uploads_data:/app/uploads
+
+      # Named volume for the sentence-transformers model cache so the
+      # ~90 MB embedding model isn't re-downloaded on every container start.
+      - hf_cache:/root/.cache/huggingface
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s   # give uvicorn + graph build time to start
+      retries: 3
+
+  # -------------------------------------------------------------------------
+  # Frontend — Nginx serving the vanilla HTML/CSS/JS web/ directory and
+  # reverse-proxying /api/* calls to the backend container.
+  # -------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: ledgerlens_frontend
+    image: ledgerlens-frontend:latest
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      backend:
+        condition: service_healthy   # wait until the backend /health passes
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 5s
+      retries: 3
+
+# ---------------------------------------------------------------------------
+# Named volumes
+# ---------------------------------------------------------------------------
+volumes:
+  # Temp PDF files produced during request processing.
+  uploads_data:
+    driver: local
+
+  # Hugging Face model cache — avoids re-downloading sentence-transformers
+  # (~90 MB) on every fresh container start.
+  hf_cache:
+    driver: local

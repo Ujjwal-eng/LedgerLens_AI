@@ -1,0 +1,56 @@
+# Python runtime artifacts
+__pycache__/
+*.py[oc]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments — use the image's own pip-installed packages
+.venv/
+venv/
+env/
+
+# uv lockfile / package manager metadata (pip + requirements.txt is used)
+uv.lock
+.python-version
+
+# Secrets — NEVER bake these into the image
+.env
+.env.*
+
+# Git history
+.git/
+.gitignore
+
+# IDE / editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Runtime-generated data files (these are created fresh on container start
+# or live in Supabase, not on local disk)
+data/reports/
+data/routing_log.jsonl
+data/human_decisions.jsonl
+data/report_log.txt
+data/web_app_state.json
+extraction_results.json
+uploads/
+
+# Docker files themselves (no need to copy into the image)
+Dockerfile
+Dockerfile.frontend
+docker-compose.yml
+.dockerignore
+# NOTE: nginx.conf is intentionally NOT excluded — Dockerfile.frontend COPYs it
+
+# Test files (not needed at runtime)
+test_*.py
+evals/
+
+# Docs / assets not needed at runtime
+README.md
+SETUP.md
+workflow-diagram.png
