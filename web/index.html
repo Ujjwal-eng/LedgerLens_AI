@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LedgerLens AI — Multi-agent invoice approval system powered by LangGraph. Automated extraction, compliance checking, risk assessment, and human-in-the-loop approval.">
+    <title>LedgerLens AI — Intelligent Invoice Approval</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z'/%3E%3Cpath d='M14 2v6h6'/%3E%3Cpath d='m9 15 2 2 4-4'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ==================== AUTH SCREEN ==================== -->
+<div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="sidebar-logo-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></svg></div>
+            <div class="sidebar-logo-text"><span>Ledger</span>Lens AI</div>
+        </div>
+        <p class="auth-subtitle">Multi-agent invoice approval, powered by LangGraph.</p>
+
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab active" id="authTabLogin" onclick="switchAuthTab('login')">Log In</button>
+            <button type="button" class="auth-tab" id="authTabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+        </div>
+
+        <div class="auth-message" id="authMessage" style="display:none;"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <label class="auth-field-label" for="loginEmail">Email</label>
+            <input class="auth-input" type="email" id="loginEmail" autocomplete="email" required>
+            <label class="auth-field-label" for="loginPassword">Password</label>
+            <input class="auth-input" type="password" id="loginPassword" autocomplete="current-password" required>
+            <button type="submit" class="auth-submit" id="loginSubmitBtn">Log In</button>
+        </form>
+
+        <form id="signupForm" onsubmit="handleSignup(event)" style="display:none;">
+            <label class="auth-field-label" for="signupEmail">Email</label>
+            <input class="auth-input" type="email" id="signupEmail" autocomplete="email" required>
+            <label class="auth-field-label" for="signupPassword">Password</label>
+            <input class="auth-input" type="password" id="signupPassword" autocomplete="new-password" minlength="6" required>
+            <button type="submit" class="auth-submit" id="signupSubmitBtn">Sign Up</button>
+        </form>
+
+        <p class="auth-footnote">New user? First Sign Up then Log In.</p>
+    </div>
+</div>
+
+<div class="app-shell" id="appShell" style="display:none;">
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 6h16"/><path d="M4 18h16"/></svg></button>
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-logo" onclick="navigateTo('overview')">
+                <div class="sidebar-logo-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></svg></div>
+                <div class="sidebar-logo-text"><span>Ledger</span>Lens AI</div>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Main</div>
+            <a class="nav-item active" data-page="overview" onclick="navigateTo('overview')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg></span> Overview
+            </a>
+            <a class="nav-item" data-page="upload" onclick="navigateTo('upload')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span> Upload Invoice
+            </a>
+            <a class="nav-item" data-page="new-invoices" onclick="navigateTo('new-invoices')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8"/><path d="M8 17h5"/></svg></span> New Invoices
+            </a>
+            <a class="nav-item" data-page="results" onclick="navigateTo('results')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M12 7v5l3 3"/></svg></span> Results
+            </a>
+            <a class="nav-item" data-page="samples" onclick="navigateTo('samples')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span> Sample Invoices
+            </a>
+            <a class="nav-item" data-page="dashboard" onclick="navigateTo('dashboard')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span> Dashboard
+            </a>
+
+            <div class="nav-section-label">Workflow</div>
+            <a class="nav-item" data-page="approval" onclick="navigateTo('approval')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></span> Approval Queue
+                <span class="nav-badge" id="approvalBadge">2</span>
+            </a>
+            <a class="nav-item" data-page="invoices" onclick="navigateTo('invoices')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span> All Invoices
+            </a>
+
+            <div class="nav-section-label">Analytics</div>
+            <a class="nav-item" data-page="reports" onclick="navigateTo('reports')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> Reports
+            </a>
+            <a class="nav-item" data-page="routing" onclick="navigateTo('routing')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.97a4 4 0 0 0 3.4-1.9l.44-.7"/><path d="M2 6h1.97a4 4 0 0 1 3.4 1.9l5.26 8.2A4 4 0 0 0 16.03 18H22"/><path d="M22 6h-6.03a4 4 0 0 0-3.4 1.9l-.44.7"/></svg></span> LLM Routing
+            </a>
+            <a class="nav-item" data-page="contracts" onclick="navigateTo('contracts')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg></span> Vendor Contracts
+            </a>
+            <a class="nav-item" data-page="added-contracts" onclick="navigateTo('added-contracts')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg></span> Added Contracts
+            </a>
+            <a class="nav-item" data-page="evaluations" onclick="navigateTo('evaluations')">
+                <span class="nav-item-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span> Evaluations
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user-row">
+                <span class="sidebar-user-email" id="sidebarUserEmail"></span>
+                <button type="button" class="sidebar-logout-btn" onclick="handleLogout()" title="Log out">
+                    <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                </button>
+            </div>
+            <div class="sidebar-version">v0.1.0 · LangGraph</div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-content">
+
+        <!-- ========== OVERVIEW PAGE ========== -->
+        <div class="page-view active" id="page-overview">
+            <div class="page-header">
+                <h1>Overview</h1>
+                <p>Multi-agent invoice approval powered by LangGraph</p>
+            </div>
+            <div class="page-body">
+                <!-- Hero -->
+                <div class="overview-hero">
+                    <div class="hero-badge"><span class="pulse"></span> AI-Powered Approval Pipeline</div>
+                    <h2>Intelligent Invoice Processing with <span class="gradient-text">Multi-Agent AI</span></h2>
+                    <p>Five specialized agents work together — Extraction, Compliance, Risk, Supervisor, and Reporting — orchestrated by LangGraph with human-in-the-loop approval, persistent vendor memory, and full LangSmith observability.</p>
+                </div>
+
+                <!-- What It Is -->
+                <div class="about-strip">
+                    <div class="about-strip-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+                    <p><strong>LedgerLens AI</strong> is an AI tool that runs every invoice a business receives against that vendor's actual contract terms and billing history — automatically, before a rupee gets approved. Instead of someone manually cross-checking payment terms, price bands, and prior invoices, five coordinated agents do it in seconds and only pull a human in when something genuinely needs a decision.</p>
+                </div>
+
+                <!-- How It Works -->
+                <div class="features-section">
+                    <h3 class="section-title">How It Works</h3>
+                    <p class="section-subtitle">From first upload to a resolved decision — one pipeline, start to finish</p>
+                    <div class="hiw-grid">
+                        <div class="hiw-step">
+                            <div class="hiw-step-number">01</div>
+                            <h4>Upload the invoice</h4>
+                            <p>Open <a href="#" onclick="navigateTo('upload')">Upload Invoice</a> and add a PDF. It's staged and dropped into <a href="#" onclick="navigateTo('new-invoices')">New Invoices</a> until a contract is attached to it.</p>
+                        </div>
+                        <div class="hiw-step">
+                            <div class="hiw-step-number">02</div>
+                            <h4>Attach the vendor contract</h4>
+                            <p>Add that vendor's contract terms — payment terms, price ranges, freeform clauses — so to check the invoices against that vendor contract. Can view added contracts in <a href="#" onclick="navigateTo('added-contracts')">Added Contracts</a>.</p>
+                        </div>
+                        <div class="hiw-step">
+                            <div class="hiw-step-number">03</div>
+                            <h4>Run it through the pipeline</h4>
+                            <p>Run a single invoice immediately, or head to <a href="#" onclick="navigateTo('new-invoices')">New Invoices</a> and select 2–5 contract-ready invoices to run together in batch mode.</p>
+                        </div>
+                        <div class="hiw-step">
+                            <div class="hiw-step-number">04</div>
+                            <h4>Review the results</h4>
+                            <p>Each invoice's running state through pipeline is shown in  <a href="#" onclick="navigateTo('results')">Results</a>. Clean invoices under the approval ceiling are auto-approved right there.</p>
+                        </div>
+                        <div class="hiw-step">
+                            <div class="hiw-step-number">05</div>
+                            <h4>Resolve anything flagged</h4>
+                            <p>An invoice with a compliance miss, a risk signal, or a ceiling breach waits in the <a href="#" onclick="navigateTo('approval')">Approval Queue</a> — with the reason it was flagged shown alongside it. Approve, reject, or edit and re-validate it from there.</p>
+                        </div>
+                        <div class="hiw-step">
+                            <div class="hiw-step-number">06</div>
+                            <h4>Track &amp; report</h4>
+                            <p>The <a href="#" onclick="navigateTo('dashboard')">Dashboard</a> tallies approved vs. rejected across every invoice. Once a queued invoice is resolved, it moves into <a href="#" onclick="navigateTo('invoices')">All Invoices</a>. <a href="#" onclick="navigateTo('reports')">Reports</a> covers weekly digests, <a href="#" onclick="navigateTo('routing')">LLM routing</a>, and <a href="#" onclick="navigateTo('evaluations')">evaluations</a> that score processed invoices against vendor contracts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Features -->
+                <div class="features-section">
+                    <h3 class="section-title">Core Capabilities</h3>
+                    <p class="section-subtitle">Each agent handles one responsibility — no overlap, no ambiguity</p>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-card-icon emerald"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>
+                            <h4>Extraction Agent</h4>
+                            <p>Reads any PDF — text-based or scanned — using a 3-tier routing strategy: pdfplumber → Gemini (primary), with automatic Groq fallback.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon cyan"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
+                            <h4>Compliance Agent</h4>
+                            <p>Validates extracted data against vendor contracts using vectorless lookup for exact fields and traditional RAG for freeform clause retrieval.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon amber"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+                            <h4>Risk Agent</h4>
+                            <p>Detects duplicates (exact + fuzzy), first-time vendors, and price deviations using persistent vendor history from Supabase.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon blue"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg></div>
+                            <h4>Supervisor Agent</h4>
+                            <p>Makes the final call — auto-approve clean invoices or escalate flagged ones to human review.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon emerald"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                            <h4>Human-in-the-Loop</h4>
+                            <p>Graph pauses at the approval node using LangGraph's interrupt(). Humans can approve, reject, or edit fields — edits loop back for re-validation.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon cyan"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z"/></svg></div>
+                            <h4>Code Guardrails</h4>
+                            <p>Hard arithmetic checks (line-item math, total reconciliation, sanity limits) run before any agent sees the data — catches hallucinated numbers early.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon amber"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg></div>
+                            <h4>Persistent Memory</h4>
+                            <p>Every approved invoice is stored in Supabase, building a growing vendor history that makes future risk assessments smarter over time.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon blue"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
+                            <h4>Reporting Agent</h4>
+                            <p>Independent 5th agent — reads what all others wrote, generates periodic digests with LLM-powered narrative summaries on a configurable schedule.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workflow Diagram -->
+                <div class="workflow-section">
+                    <h3 class="section-title">Pipeline Workflow</h3>
+                    <p class="section-subtitle">Complete graph flow — every node, edge, and conditional path</p>
+                    <div class="workflow-diagram-container">
+                        <img src="assets/workflow_diagram.jpg" alt="LedgerLens AI Multi-Agent Invoice Approval Pipeline — LangGraph Node/Edge Diagram">
+                    </div>
+                </div>
+
+                <!-- Tech Stack -->
+                <div class="features-section">
+                    <h3 class="section-title">Technology Stack</h3>
+                    <p class="section-subtitle">Built with production-grade tools</p>
+                    <div class="tech-stack-grid">
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M12 8v4"/><path d="M12 12 5 16"/><path d="M12 12l7 4"/></svg></span> LangGraph</div>
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><path d="M8 12h8"/></svg></span> LangChain</div>
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span> LangSmith</div>
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14Z"/></svg></span> Groq</div>
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v5M12 16v5M4 12h5M15 12h5"/><circle cx="12" cy="12" r="2"/></svg></span> Gemini</div>
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></span> Supabase</div>
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span> Python</div>
+                        <div class="tech-badge"><span class="tech-badge-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.44 13.9a1.86 1.86 0 0 1-1.42-.28 1.86 1.86 0 0 0-2.6 2.6c.34.55.35 1.26.03 1.83a1.9 1.9 0 0 1-1.65.95H10a2 2 0 0 1-2-2v-3.8a1.9 1.9 0 0 0-.95-1.65 1.86 1.86 0 0 0-1.83-.03 1.86 1.86 0 0 1-2.32-2.32c.16-.46.1-.98-.15-1.4A1.9 1.9 0 0 1 4.4 6.7 2 2 0 0 1 6 6h4V4a2 2 0 1 1 4 0v2h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2Z"/></svg></span> Pydantic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== UPLOAD PAGE ========== -->
+        <div class="page-view" id="page-upload">
+            <div class="page-header">
+                <h1>Upload Invoice</h1>
+                <p>Upload a PDF invoice to run through the full approval pipeline</p>
+            </div>
+            <div class="page-body">
+                <div class="upload-container">
+                    <div class="upload-notes">
+                        One-page PDF invoices only. GST is fixed at 18% (9% CGST + 9% SGST). Supports English and Hindi invoices, including blurred scans.
+                    </div>
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-zone-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div>
+                        <h3>Drop invoice PDF here</h3>
+                        <p>or click to browse · supports text-based and scanned PDFs</p>
+                        <input type="file" id="fileInput" accept=".pdf" multiple>
+                    </div>
+
+                    <div class="upload-workflow" id="uploadWorkflow" aria-live="polite">
+                        <div class="upload-workflow-step" id="uploadStepFile"><span>1</span><div><strong>Upload PDF</strong><small id="stagedFileName">Choose an invoice to begin</small></div></div>
+                        <div class="upload-workflow-step" id="uploadStepContract"><span>2</span><div><strong>Add its vendor contract</strong><small id="stagedContractStatus">Available after the PDF is uploaded. If vendor contract already exists in Added Contracts then just fill vendor name</small></div></div>
+                        <div class="upload-workflow-step" id="uploadStepRun"><span>3</span><div><strong>Run approval pipeline</strong><small>Enabled after the contract is saved</small></div></div>
+                    </div>
+
+                    <div class="contract-helper">
+                        <button class="btn-add-contract" id="addContractBtn" onclick="openContractModal()" disabled title="Upload a PDF first. Added contracts are available to this user for 30 days.">
+                            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                            Add Vendor Contract
+                        </button>
+                    </div>
+
+                    <div class="contract-helper">
+                        <button class="btn btn-primary" id="runStagedInvoiceBtn" onclick="runStagedInvoice()" disabled>
+                            Run Invoice
+                        </button>
+                    </div>
+
+                    <div class="uploaded-invoices-card">
+                        <div class="uploaded-invoices-card-header">
+                            <div>
+                                <h3>Selected Batch Invoices</h3>
+                                <p>Choose 2–5 contract-ready invoices from New Invoices.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="runUploadedBatchBtn" onclick="runUploadedBatch()" disabled>Run Selected Batch</button>
+                        </div>
+                        <div id="uploadedInvoicesList" class="uploaded-invoices-list">
+                            <!-- Populated by JS from selections on New Invoices. -->
+                        </div>
+                    </div>
+
+                    <div class="upload-samples-hint">
+                        Want to try a single sample invoice instead? Head over to <a href="#" onclick="navigateTo('samples')">Sample Invoices</a>.
+                        Every invoice you run — from here, a sample, or your uploaded batch — shows its live progress on the <a href="#" onclick="navigateTo('results')">Results</a> page.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== NEW INVOICES PAGE ========== -->
+        <div class="page-view" id="page-new-invoices">
+            <div class="page-header">
+                <h1>New Invoices</h1>
+                <p>Uploaded invoices only. Add a contract, then select invoices here for batch processing.</p>
+            </div>
+            <div class="page-body">
+                <div class="uploaded-invoices-card new-invoices-card">
+                    <div class="uploaded-invoices-card-header">
+                        <div>
+                            <h3>Newly Uploaded Invoices</h3>
+                            <p>Sample invoices are not available for batch processing.</p>
+                        </div>
+                    </div>
+                    <div id="newInvoicesList" class="uploaded-invoices-list">
+                        <!-- Populated by JS. -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== RESULTS PAGE ========== -->
+        <div class="page-view" id="page-results">
+            <div class="page-header">
+                <h1>Results</h1>
+                <p>Live progress of the invoice currently moving through the pipeline</p>
+            </div>
+            <div class="page-body">
+                <div class="upload-container">
+                    <!-- Pipeline Progress -->
+                    <div class="pipeline-view" id="pipelineView">
+                        <div class="pipeline-file-info">
+                            <span class="pipeline-file-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+                            <div>
+                                <div class="pipeline-file-name" id="pipelineFileName">—</div>
+                                <div class="pipeline-file-size" id="pipelineFileSize">—</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-steps" id="pipelineSteps">
+                            <div class="pipeline-step" data-step="extraction">
+                                <div class="step-indicator">1</div>
+                                <div class="step-info">
+                                    <h4><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg> Extraction</h4>
+                                    <p>PDF → structured Invoice object</p>
+                                </div>
+                                <div class="step-duration" data-duration></div>
+                            </div>
+                            <div class="pipeline-step" data-step="guardrail">
+                                <div class="step-indicator">2</div>
+                                <div class="step-info">
+                                    <h4><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z"/></svg> Guardrail Check</h4>
+                                    <p>Math verification & sanity limits</p>
+                                </div>
+                                <div class="step-duration" data-duration></div>
+                            </div>
+                            <div class="pipeline-step" data-step="compliance">
+                                <div class="step-indicator">3</div>
+                                <div class="step-info">
+                                    <h4><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Compliance</h4>
+                                    <p>Contract terms & policy check</p>
+                                </div>
+                                <div class="step-duration" data-duration></div>
+                            </div>
+                            <div class="pipeline-step" data-step="risk">
+                                <div class="step-indicator">4</div>
+                                <div class="step-info">
+                                    <h4><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Risk Assessment</h4>
+                                    <p>Duplicates, anomalies, vendor history</p>
+                                </div>
+                                <div class="step-duration" data-duration></div>
+                            </div>
+                            <div class="pipeline-step" data-step="supervisor">
+                                <div class="step-indicator">5</div>
+                                <div class="step-info">
+                                    <h4><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg> Supervisor Decision</h4>
+                                    <p>Auto-approve or escalate</p>
+                                </div>
+                                <div class="step-duration" data-duration></div>
+                            </div>
+                            <div class="pipeline-step" data-step="approval">
+                                <div class="step-indicator">6</div>
+                                <div class="step-info">
+                                    <h4><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Human Approval</h4>
+                                    <p>Waiting for review (if escalated)</p>
+                                </div>
+                                <div class="step-duration" data-duration></div>
+                            </div>
+                            <div class="pipeline-step" data-step="export">
+                                <div class="step-indicator">7</div>
+                                <div class="step-info">
+                                    <h4><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg> Export & Persist</h4>
+                                    <p>Export to accounting + save to memory</p>
+                                </div>
+                                <div class="step-duration" data-duration></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shown whenever no invoice is currently running — CSS
+                         hides this automatically once #pipelineView gets the
+                         .visible class (see the sibling-selector rule in
+                         style.css), and it reappears once the pipeline is
+                         auto-hidden after a completed invoice. -->
+                    <div class="results-empty-state">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M12 7v5l3 3"/></svg>
+                        <h3>Nothing running right now</h3>
+                        <p>Upload an invoice, run a sample, or start batch mode — it'll show up here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== SAMPLE INVOICES PAGE ========== -->
+        <div class="page-view" id="page-samples">
+            <div class="page-header">
+                <h1>Sample Invoices</h1>
+                <p>Browse the PDFs on the server, open any of them in your PDF viewer, or run one through the pipeline</p>
+            </div>
+            <div class="page-body">
+                <div class="sample-invoices-list" id="sampleInvoicesGrid">
+                    <!-- Populated by JS from GET /api/sample-invoices -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== DASHBOARD PAGE ========== -->
+        <div class="page-view" id="page-dashboard">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Invoice processing overview and key metrics</p>
+            </div>
+            <div class="page-body">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Total Processed</span>
+                            <span class="stat-card-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+                        </div>
+                        <div class="stat-card-value" id="statTotal">12</div>
+                        <div class="stat-card-change positive">↑ 3 today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Auto-Approved</span>
+                            <span class="stat-card-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14Z"/></svg></span>
+                        </div>
+                        <div class="stat-card-value" id="statAutoApproved">5</div>
+                        <div class="stat-card-change positive">41.7% rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Human Approved</span>
+                            <span class="stat-card-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                        </div>
+                        <div class="stat-card-value" id="statHumanApproved">5</div>
+                        <div class="stat-card-change positive">41.7% rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Rejected</span>
+                            <span class="stat-card-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg></span>
+                        </div>
+                        <div class="stat-card-value" id="statRejected">2</div>
+                        <div class="stat-card-change negative">16.7% rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Total Approved</span>
+                            <span class="stat-card-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
+                        </div>
+                        <div class="stat-card-value" id="statAmount">₹2.4L</div>
+                        <div class="stat-card-change positive">↑ ₹42K today</div>
+                    </div>
+                </div>
+
+                <!-- Recent Invoices Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <span class="table-title">Recent Invoices</span>
+                        <div class="table-actions">
+                            <button class="btn btn-ghost btn-sm" onclick="navigateTo('invoices')">View All</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Vendor</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Method</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentInvoicesBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== APPROVAL QUEUE PAGE ========== -->
+        <div class="page-view" id="page-approval">
+            <div class="page-header">
+                <h1>Approval Queue</h1>
+                <p>Invoices escalated for human review — approve, reject, or edit</p>
+            </div>
+            <div class="page-body">
+                <div id="approvalQueue">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="empty-state" id="approvalEmpty" style="display:none;">
+                    <div class="empty-state-icon"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                    <h3>All caught up</h3>
+                    <p>No invoices pending review. The Supervisor auto-approved everything — nice.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ALL INVOICES PAGE ========== -->
+        <div class="page-view" id="page-invoices">
+            <div class="page-header">
+                <h1>All Invoices</h1>
+                <p>Complete history of processed invoices</p>
+            </div>
+            <div class="page-body">
+                <div class="table-container">
+                    <div class="table-header">
+                        <span class="table-title">Invoice Ledger</span>
+                        <div class="table-actions">
+                            <button class="btn btn-ghost btn-sm" onclick="navigateTo('upload')">+ Upload New</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Vendor</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Compliance</th>
+                                <th>Risk</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allInvoicesBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== REPORTS PAGE ========== -->
+        <div class="page-view" id="page-reports">
+            <div class="page-header">
+                <h1>Reports</h1>
+                <p>AI-generated processing digests and analytics</p>
+            </div>
+            <div class="page-body">
+                <!-- Daily Digest (from GET /api/report/daily)
+                <div class="report-card">
+                    <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> Daily Digest — Reporting Agent</h3>
+                    <div class="report-narrative" id="dailyReportNarrative" style="color:var(--text-muted);font-style:italic">
+                        Loading…
+                    </div>
+                    <div class="report-stats-bar">
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="dailyReportStatProcessed">0</div>
+                            <div class="report-stat-label">Processed</div>
+                        </div>
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="dailyReportStatAutoApproved">0</div>
+                            <div class="report-stat-label">Auto-Approved</div>
+                        </div>
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="dailyReportStatHumanApproved">0</div>
+                            <div class="report-stat-label">Human-Approved</div>
+                        </div>
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="dailyReportStatRejected">0</div>
+                            <div class="report-stat-label">Rejected</div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- Weekly Digest (from GET /api/report/weekly) -->
+                <div class="report-card">
+                    <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> Weekly Digest — Reporting Agent</h3>
+                    <div class="report-narrative" id="reportNarrative" style="color:var(--text-muted);font-style:italic">
+                        Loading…
+                    </div>
+                    <div class="report-stats-bar">
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="reportStatProcessed">0</div>
+                            <div class="report-stat-label">Processed</div>
+                        </div>
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="reportStatAutoApproved">0</div>
+                            <div class="report-stat-label">Auto-Approved</div>
+                        </div>
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="reportStatHumanApproved">0</div>
+                            <div class="report-stat-label">Human-Approved</div>
+                        </div>
+                        <div class="report-stat">
+                            <div class="report-stat-value" id="reportStatRejected">0</div>
+                            <div class="report-stat-label">Rejected</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vendor Breakdown -->
+                <div class="report-card">
+                    <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg> Vendor Breakdown</h3>
+                    <!-- <table class="data-table"> -->
+                    <table class="data-table vendor-breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Invoices</th>
+                                <th>Total Amount</th>
+                                <th>Avg Amount</th>
+                                <th>Risk Profile</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vendorBreakdownBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LLM ROUTING PAGE ========== -->
+        <div class="page-view" id="page-routing">
+            <div class="page-header">
+                <h1>LLM Routing Stats</h1>
+                <p>Extraction routing — Gemini (primary, text + vision) with automatic Groq fallback</p>
+            </div>
+            <div class="page-body">
+                <div class="report-card">
+                    <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.97a4 4 0 0 0 3.4-1.9l.44-.7"/><path d="M2 6h1.97a4 4 0 0 1 3.4 1.9l5.26 8.2A4 4 0 0 0 16.03 18H22"/><path d="M22 6h-6.03a4 4 0 0 0-3.4 1.9l-.44.7"/></svg> Routing Distribution</h3>
+                    <div class="routing-bar">
+                        <div class="routing-bar-segment groq" id="routingGroq" style="width: 0%"></div>
+                        <div class="routing-bar-segment gemini" id="routingGemini" style="width: 0%"></div>
+                        <div class="routing-bar-segment fallback" id="routingFallback" style="width: 0%"></div>
+                    </div>
+                    <div class="routing-legend">
+                        <div class="routing-legend-item"><span class="routing-legend-dot groq"></span> Groq (fallback) — <strong id="routingGroqPct">0%</strong></div>
+                        <div class="routing-legend-item"><span class="routing-legend-dot gemini"></span> Gemini (primary) — <strong id="routingGeminiPct">0%</strong></div>
+                        <div class="routing-legend-item"><span class="routing-legend-dot fallback"></span> Fallback triggered — <strong id="routingFallbackPct">0%</strong></div>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Routing Log</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Tier</th>
+                                <th>Provider</th>
+                                <th>Status</th>
+                                <th>Fallback</th>
+                            </tr>
+                        </thead>
+                        <tbody id="routingLogBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== VENDOR CONTRACTS PAGE ========== -->
+        <div class="page-view" id="page-contracts">
+            <div class="page-header">
+                <h1>Vendor Contracts</h1>
+                <p>What the Compliance Agent checks every sample invoice against</p>
+            </div>
+            <div class="page-body">
+                <div class="report-card">
+                    <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>Stored in DataBase</h3>
+                    <p style="color:var(--text-muted); font-size:12.5px; margin-bottom:16px;">Read-only. These are the real contracts every compliance check runs against sample invoices.</p>
+                    <div id="realContractsList" class="contracts-grid"><!-- Populated by JS --></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ADDED CONTRACTS PAGE ========== -->
+        <div class="page-view" id="page-added-contracts">
+            <div class="page-header">
+                <h1>Added Contracts</h1>
+                <p>Your manually added vendor contracts, retained for 30 days.</p>
+            </div>
+            <div class="page-body">
+                <div id="addedContractsList" class="contracts-grid"><!-- Populated by JS --></div>
+            </div>
+        </div>
+
+        <!-- ========== EVALUATIONS PAGE ========== -->
+        <div class="page-view" id="page-evaluations">
+            <div class="page-header">
+                <h1>Evaluation Results</h1>
+                <p>Evaluate a processed invoice against stored contracts, or against its manually-added vendor contract</p>
+            </div>
+            <div class="page-body">
+                <div class="report-card">
+                    <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Run Evaluations</h3>
+                    <p style="color:var(--text-muted); font-size:12.5px; margin-bottom:0;">
+                        Evaluation is per invoice, and only available once that invoice has been processed. Sample invoices are scored against their entry in
+                        Database. New invoices uploaded with a manually-added vendor contract are scored against that contract instead.
+                    </p>
+                </div>
+
+                <div id="evalInvoiceList"><!-- Populated by JS --></div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ==================== ADD VENDOR CONTRACT MODAL ==================== -->
+<div class="modal-overlay" id="contractModal">
+    <div class="modal modal-wide">
+        <div class="modal-header">
+            <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg> Add Vendor Contract</h3>
+            <button class="modal-close" onclick="closeContractModal()"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:12.5px; color:var(--text-secondary); margin-bottom:20px;">
+                Saved for 30 days.
+                <strong>Vendor Name</strong> must match (case doesn't matter) whatever gets extracted from the invoice PDF, or Compliance won't find it.
+            </p>
+
+            <div id="contractExistingBanner" class="info-banner" style="display:none;margin-bottom:14px;">
+                <span id="contractExistingBannerText"></span>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="useExistingContract()" style="margin-left:8px">Use this</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="dismissExistingContractMatch()">Enter new instead</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Vendor Name *</label>
+                <input class="form-input" type="text" id="contractVendorName" placeholder="e.g. Chatterjee Print & Packaging">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">GSTIN *</label>
+                    <input class="form-input" type="text" id="contractGstin" placeholder="e.g. 19AABCC7654N1Z8">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Payment Terms (days) *</label>
+                    <input class="form-input" type="number" id="contractPaymentTerms" placeholder="e.g. 30">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Max Invoice Amount (Rs.) *</label>
+                    <input class="form-input" type="number" id="contractMaxAmount" placeholder="e.g. 80000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Discount Percentage <span style="color:var(--text-muted)">(optional)</span></label>
+                    <input class="form-input" type="number" id="contractDiscountPercentage" min="0" max="100" step="0.01" placeholder="e.g. 5">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Pricing Rules — per line-item description *</label>
+                <div id="pricingRuleRows" class="dynamic-rows"><!-- rows added by JS --></div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="addPricingRuleRow()">+ Add pricing rule</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Clauses <span style="color:var(--text-muted)">(optional — used by the relevant-clause lookup)</span></label>
+                <div id="clauseRows" class="dynamic-rows"><!-- rows added by JS --></div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="addClauseRow()">+ Add clause</button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeContractModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitContractForm()">Save Vendor Contract</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== EDIT MODAL ==================== -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal modal-wide">
+        <div class="modal-header">
+            <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg> Edit</h3>
+            <button class="modal-close" onclick="closeEditModal()"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:12.5px; color:var(--text-secondary); margin-bottom:20px;">
+                Saved for this user for 30 days — never written to vendor_contracts.json.
+                <strong>Vendor Name</strong> must match (case doesn't matter) whatever gets extracted from the invoice PDF, or Compliance won't find it.
+            </p>
+
+            <div class="form-group">
+                <label class="form-label">Vendor Name *</label>
+                <input class="form-input" type="text" id="editVendorName" placeholder="e.g. Chatterjee Print & Packaging">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">GSTIN *</label>
+                    <input class="form-input" type="text" id="editGstin" placeholder="e.g. 19AABCC7654N1Z8">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Payment Terms (days) *</label>
+                    <input class="form-input" type="number" id="editPaymentTerms" placeholder="e.g. 30">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Max Invoice Amount (Rs.) *</label>
+                    <input class="form-input" type="number" id="editMaxAmount" placeholder="e.g. 80000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Discount Percentage <span style="color:var(--text-muted)">(optional)</span></label>
+                    <input class="form-input" type="number" id="editDiscountPercentage" min="0" max="100" step="0.01" placeholder="e.g. 5">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Pricing Rules — per line-item description *</label>
+                <div id="editPricingRuleRows" class="dynamic-rows"><!-- rows added by JS --></div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="addEditPricingRuleRow()">+ Add pricing rule</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Clauses <span style="color:var(--text-muted)">(optional — used by the relevant-clause lookup)</span></label>
+                <div id="editClauseRows" class="dynamic-rows"><!-- rows added by JS --></div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="addEditClauseRow()">+ Add clause</button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitEdit()">Save Vendor Contract</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== REJECT MODAL ==================== -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg> Reject Invoice</h3>
+            <button class="modal-close" onclick="closeRejectModal()"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Rejection Reason</label>
+                <textarea class="form-input" id="rejectReason" placeholder="e.g. Duplicate — already paid last week"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeRejectModal()">Cancel</button>
+            <button class="btn btn-danger" onclick="submitReject()">Confirm Rejection</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== INVOICE DETAIL MODAL ==================== -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal" style="width:700px;">
+        <div class="modal-header">
+            <h3 id="detailModalTitle">Invoice Details</h3>
+            <button class="modal-close" onclick="closeDetailModal()"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <div class="modal-body" id="detailModalBody">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
