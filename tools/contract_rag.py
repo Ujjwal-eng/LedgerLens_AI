@@ -35,12 +35,14 @@ def _cosine_sim(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-8))
 
 
-def retrieve_relevant_clause(vendor_name: str, query: str, top_k: int = 1):
-    contracts = _load_contracts()
-    contract = next((c for c in contracts if c["vendor_name"] == vendor_name), None)
-    if contract is None or not contract.get("clauses"):
+# def retrieve_relevant_clause(vendor_name: str, query: str, top_k: int = 1):
+#     contracts = _load_contracts()
+#     contract = next((c for c in contracts if c["vendor_name"] == vendor_name), None)
+#     if contract is None or not contract.get("clauses"):
+#         return None
+def retrieve_relevant_clause(contract: dict, query: str, top_k: int = 1):
+    if not contract or not contract.get("clauses"):
         return None
-
     model = _get_model()
     clause_embeddings = model.encode(contract["clauses"])
     query_embedding = model.encode(query)
