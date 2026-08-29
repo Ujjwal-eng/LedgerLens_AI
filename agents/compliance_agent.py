@@ -81,7 +81,7 @@ class ComplianceAgent:
         relevant_clause, relevant_score = None, None
         if problem_checks:
             query = _build_rag_query(problem_checks)
-            results = retrieve_relevant_clause(invoice.vendor, query, top_k=1)
+            results = retrieve_relevant_clause(contract, query, top_k=1)
             if results:
                 relevant_clause, relevant_score = results[0]
 
