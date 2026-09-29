@@ -6,7 +6,7 @@ google-genai
 pdfplumber
 pdf2image
 python-dotenv
-sentence-transformers
+fastembed
 numpy
 pytesseract
 supabase
