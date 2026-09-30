@@ -552,6 +552,10 @@ def _load_eval_module(name: str):
 
 app = FastAPI(title="LedgerLens AI API")
 
+@app.api_route("/health", methods=["GET", "HEAD"])
+def health():
+    return {"status": "ok"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
